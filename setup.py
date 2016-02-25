@@ -44,4 +44,9 @@ setup(
         "simplejson",
         "PyYAML",
     ],
+    entry_points={
+        'console_scripts': [
+            'sun = sunhead.__main__:main',
+        ],
+    }
 )

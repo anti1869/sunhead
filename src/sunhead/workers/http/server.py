@@ -12,7 +12,8 @@ from uuid import uuid4
 from aiohttp import web
 
 from sunhead.conf import settings
-from sunhead.urls import urlpatterns
+# from sunhead.urls import urlpatterns
+from sunhead.version import get_version
 from sunhead.workers.abc import AbstractHttpServerWorker, HttpServerWorkerMixinMeta
 
 
@@ -35,6 +36,10 @@ class Server(AbstractHttpServerWorker):
     @property
     def app(self) -> web.Application:
         return self._app
+
+    @property
+    def app_name(self):
+        return "sunhead_http_server"
 
     @property
     def guid(self):
@@ -65,7 +70,7 @@ class Server(AbstractHttpServerWorker):
         return mw
 
     def print_banner(self):
-        print("Powered by Brandt   ()==[:::::::::::::>\n")
+        print("Powered by ☀ {}\n".format(get_version(full=True)))
 
     def print_config_info(self):
         logger.info("Config from '%s'", settings.SETTINGS_MODULE)
@@ -77,7 +82,7 @@ class Server(AbstractHttpServerWorker):
         tuple(map(lambda x: self._app.router.add_route(*x), self.get_urlpatterns()))
 
     def get_urlpatterns(self):
-        return urlpatterns
+        return []
 
     def init_requirements(self, loop):
         pass
@@ -172,4 +177,3 @@ class Server(AbstractHttpServerWorker):
 
 class BaseServerMixin(metaclass=HttpServerWorkerMixinMeta):
     pass
-
