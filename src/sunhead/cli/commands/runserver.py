@@ -29,7 +29,6 @@ class Runserver(Command):
 
     def handler(self, options) -> None:
         srv_class = self.get_server_class()
-        print(options)
         srv = srv_class(fd=options['fd'], host=options['host'], port=options['port'])
         srv.run()
 

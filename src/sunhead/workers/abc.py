@@ -93,9 +93,6 @@ class HttpServerWorkerMixinMeta(ABCMeta):
     """
 
     def __call__(cls, *args, **kwargs):
-        print('  Meta.__call__(cls=%s, args=%s, kwargs=%s)' % (
-            cls, args, kwargs
-        ))
         # TODO: Figure out how to properly add special methods and checks here for accessing Server class
         # if AbstractHttpServerWorker not in cls.__bases__:
         #     raise TypeError(
