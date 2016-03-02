@@ -29,6 +29,7 @@ class Runserver(Command):
 
     def handler(self, options) -> None:
         srv_class = self.get_server_class()
+        print(options)
         srv = srv_class(fd=options['fd'], host=options['host'], port=options['port'])
         srv.run()
 
@@ -44,11 +45,9 @@ class Runserver(Command):
             "host",
             help="IP address for listen",
             nargs="?",
-            default="127.0.0.1",
         )
         parser_command.add_argument(
             "-p", "--port",
             help="TCP port address for listen",
-            default="8100",
         )
         return parser_command

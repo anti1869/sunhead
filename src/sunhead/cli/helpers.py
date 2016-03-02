@@ -27,7 +27,6 @@ def parse_args(commands: Iterable[Command], args: Optional[Iterable[str]] = None
             help=command_parser.description,
             description=command_parser.description,
             add_help=False,
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         sp.set_defaults(func=command.handler)
 
