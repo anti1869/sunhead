@@ -22,7 +22,7 @@ setup(
     author="Dmitry Litvinenko",
     author_email="anti1869@gmail.com",
     long_description=readme(),
-    url="https://gitlab.rambler.ru/video/sunhead",
+    url="https://github.com/anti1869/sunhead",
     package_dir={'': SOURCE_DIR_NAME},
     packages=find_packages(SOURCE_DIR_NAME, exclude=('*.tests',)),
     include_package_data=True,
