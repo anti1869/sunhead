@@ -38,6 +38,8 @@ setup(
         'Topic :: Internet :: WWW/HTTP',
     ],
     install_requires=[
+        "aioamqp",
+        "aiocron",
         "aiohttp",
         "aiohttp_autoreload",
         "colorlog",
