@@ -11,7 +11,7 @@ from typing import Sequence, AnyStr
 
 import aiocron
 
-from sunhead.events.abc import AbstractSubscriber, AbstractTransport
+from sunhead.events.abc import AbstractSubscriber, AbstractTransport, SingleConnectionMeta
 from sunhead.events.exceptions import StreamConnectionError
 from sunhead.events.types import Transferrable
 
@@ -20,6 +20,9 @@ logger = logging.getLogger(__name__)
 
 
 DEFAULT_TRANSPORT = "brandt.events.transports.amqp.AMQPClient"
+
+
+__all__ = ("Stream", "get_stream", "init_stream_from_settings")
 
 
 class Stream(object):
@@ -94,6 +97,23 @@ class Stream(object):
         await self._transport.consume_queue(subscriber)
 
 
+class StreamStorage(dict):
+
+    DEFAULT_KEY = "default"
+
+    def get_default(self) -> Stream:
+        result = self.get(self.DEFAULT_KEY, None)
+        return result
+
+    def push(self, key: str, value: Stream):
+        if not len(self):
+            self[self.DEFAULT_KEY] = value
+        self[key] = value
+
+
+_stream_storage = StreamStorage()
+
+
 async def init_stream_from_settings(cfg: dict) -> Stream:
     """
     Shortcut to create Stream from configured settings.
@@ -103,7 +123,7 @@ async def init_stream_from_settings(cfg: dict) -> Stream:
         {
             "streams": {
                 "rabbitmq": {
-                    "transport": "brandt.events.transports.amqp.AMQPClient",
+                    "transport": "sunhead.events.transports.amqp.AMQPClient",
                     "connection_parameters": {
                         "login": "guest",
                         "password": "",
@@ -125,4 +145,10 @@ async def init_stream_from_settings(cfg: dict) -> Stream:
     stream_init_kwargs = cfg["streams"][cfg_name]
     stream = Stream(**stream_init_kwargs)
     await stream.connect()
+    _stream_storage.push(cfg_name, stream)
+    return stream
+
+
+def get_stream(name: str = None) -> Stream:
+    stream = _stream_storage.get(name) if name else _stream_storage.get_default()
     return stream

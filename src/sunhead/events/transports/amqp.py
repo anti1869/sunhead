@@ -125,6 +125,8 @@ class AMQPClient(AbstractTransport):
             exchange_name=self._exchange_name,
             routing_key=topic
         )
+        # Uncomment for debugging
+        # logger.debug("Published message to AMQP exchange=%s, topic=%s", self._exchange_name, topic)
 
     async def consume_queue(self, subscriber: AbstractSubscriber) -> None:
 
