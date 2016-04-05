@@ -44,6 +44,10 @@ class AbstractTransport(SingleConnectionMeta):
     async def connect(self) -> None:
         pass
 
+    @abstractmethod
+    async def close(self) -> None:
+        pass
+
     @property
     @abstractmethod
     def connected(self) -> bool:

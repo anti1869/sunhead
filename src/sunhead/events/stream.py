@@ -96,6 +96,10 @@ class Stream(object):
     async def dequeue(self, subscriber: AbstractSubscriber) -> None:
         await self._transport.consume_queue(subscriber)
 
+    async def close(self):
+        logger.info("Closing Stream")
+        await self._transport.close()
+
 
 class StreamStorage(dict):
 

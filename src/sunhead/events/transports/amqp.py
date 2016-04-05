@@ -113,6 +113,10 @@ class AMQPClient(AbstractTransport):
 
         self._is_connecting = False
 
+    async def close(self):
+        self._protocol.stop()
+        await self._channel.close()
+
     async def publish(self, data: Transferrable, topic: AnyStr) -> None:
         if not self.connected:
             logger.warning("Attempted to send message while not connected")

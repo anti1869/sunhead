@@ -25,3 +25,7 @@ class ServerStreamConnection(StreamConnectionMixin, BaseServerMixin):
 
         # Save to app object to be accessible in request handlers
         self._server_instance.app.stream = self._stream
+
+    def cleanup(self, srv, handler, loop):
+        loop.run_until_complete(getattr(self._server_instance.app, "stream").close())
+        getattr(super(), "cleanup")(srv, handler, loop)
