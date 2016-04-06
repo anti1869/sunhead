@@ -1,11 +1,13 @@
-# SunHead
+SunHead
+=======
 
 ***This is preview. It's pre-beta, pre-alpha, pre-anything, so don't use it in real projects. 
 More work is on the way.***
 
 Framework for building asynchronous websites and micro-services on top of aiohttp
 
-## Basic example
+Basic example
+-------------
 
 This is how to run your ``epic_app``'s webserver::
 
@@ -32,7 +34,8 @@ This is how to run your ``epic_app``'s webserver::
     if __name__ == '__main__':
         main()
 
-## Features
- 
+Features
+--------
+
 You can run workers from basic console scripts up to the http-servers, connected to messaging streams, queues, etc.
 There are REST helper classes, CLI tools, settings incapsulation and other useful things.
