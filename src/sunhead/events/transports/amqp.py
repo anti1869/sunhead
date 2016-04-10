@@ -3,19 +3,17 @@ Use this module members to connect to RabbitMQ instance.
 """
 
 import asyncio
-from fnmatch import fnmatch
 import logging
-from typing import Any, AnyStr, Sequence, Set, Dict
+from fnmatch import fnmatch
+from typing import AnyStr, Sequence
 from uuid import uuid4
 
 import aioamqp
-import simplejson as json
 
-from sunhead.events.abc import AbstractTransport, AbstractSubscriber
 from sunhead.events import exceptions
-from sunhead.events.serializers.json import JSONSerializer
+from sunhead.events.abc import AbstractTransport, AbstractSubscriber
 from sunhead.events.types import Transferrable
-
+from sunhead.serializers import JSONSerializer
 
 logger = logging.getLogger(__name__)
 

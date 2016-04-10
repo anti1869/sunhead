@@ -3,6 +3,9 @@ JSON message body serializer
 """
 
 import logging
+from datetime import datetime, timedelta
+import enum
+import uuid
 
 try:
     import simplejson as json
@@ -15,6 +18,29 @@ from sunhead.events.types import Transferrable, Serialized
 
 
 logger = logging.getLogger(__name__)
+
+
+def json_serial(obj):
+    """JSON serializer for objects not serializable by default json code"""
+
+    if isinstance(obj, datetime):
+        serial = obj.isoformat()
+
+    elif issubclass(obj.__class__, enum.Enum):
+        serial = obj.value
+
+    elif isinstance(obj, timedelta):
+        serial = str(obj)
+
+    elif isinstance(obj, uuid.UUID):
+        serial = str(obj)
+
+    # FIXME: if you want to add one more custom serializer, think twice about `singledispatch`
+
+    else:
+        raise TypeError("Type not serializable %s in %s" % (type(obj), obj))
+
+    return serial
 
 
 class JSONSerializer(AbstractSerializer):
@@ -42,7 +68,7 @@ class JSONSerializer(AbstractSerializer):
 
     def serialize(self, data: Transferrable) -> Serialized:
         try:
-            serialized = json.dumps(data)
+            serialized = json.dumps(data, default=json_serial)
         except Exception:
             logger.error("Message serialization error", exc_info=True)
             if not self.graceful:
