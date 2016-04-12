@@ -6,7 +6,7 @@ if sys.version_info < (3, 5):
     raise Exception('This package requires Python 3.5 or higher.')
 
 
-VERSION = "5.0.1a1"
+VERSION = "5.0.1a2"
 PACKAGE_NAME = "sunhead"
 SOURCE_DIR_NAME = "src"
 
