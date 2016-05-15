@@ -137,6 +137,7 @@ async def init_stream_from_settings(cfg: dict) -> Stream:
                     },
                     "exchange_name": "video_bus",
                     "exchange_type": "topic",
+                    "global_qos": None,
                 },
                 "kafka": {},
             },
