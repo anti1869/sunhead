@@ -9,3 +9,15 @@ class SunHeadException(Exception):
 
 class ImproperlyConfigured(SunHeadException):
     """There is an error in configuration file"""
+
+
+class MetricsException(SunHeadException):
+    """Error in metrics module"""
+
+
+class DuplicateMetricException(MetricsException):
+    """Duplicate metric"""
+
+
+class IncorrectMetricsSnapshotFormatException(MetricsException):
+    """No such format"""

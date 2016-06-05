@@ -16,6 +16,12 @@ And you're magically good already.
 If there is ServerStreamConnection enabled on server, this extension will even send
 runtime stats to the Stream!
 
+There are two endpoints exposed:
+
+- /runtime/ - Some status info
+- /metrics - Metrics snapshot in Prometheus-compliant format
+
+Enjoy.
 """
 
 import logging
@@ -23,10 +29,11 @@ from asyncio import ensure_future
 
 from aiohttp.web import Application
 
-from sunhead.version import get_version
 from sunhead.conf import settings
+from sunhead.metrics import get_metrics, Metrics
 from sunhead.periodical import crontab
-from sunhead.rest.views import JSONView
+from sunhead.rest.views import JSONView, BasicView
+from sunhead.version import get_version
 from sunhead.workers.http.server import BaseServerMixin
 
 
@@ -37,6 +44,9 @@ async def runtime_stats_middleware(app, handler):
     async def middleware_handler(request):
         app.setdefault("_request_cnt", 0)
         app["_request_cnt"] += 1
+        if hasattr(app, "metrics"):
+            metrics_app_name = getattr(app, "metrics_app_name", "sunhead_httpserver")
+            app.metrics.counters["{}_requests_total".format(metrics_app_name)].inc()
         return await handler(request)
     return middleware_handler
 
@@ -60,6 +70,13 @@ class RuntimeStatsView(JSONView):
         return context_data
 
 
+class PrometheusMetricsView(BasicView):
+
+    async def get(self):
+        snapshot = self.request.app.metrics.text_snapshot(Metrics.SNAPSHOT_PROMETHEUS)
+        return self.basic_response(text=snapshot)
+
+
 class ServerStatsMixin(BaseServerMixin):
 
     RPS_POLLING_SECS = 5
@@ -71,9 +88,14 @@ class ServerStatsMixin(BaseServerMixin):
     def _app_container(self) -> Application:
         return getattr(self, "app")
 
+    @property
+    def _metrics_app_name(self) -> str:
+        return getattr(self, "app_name").replace(".", "_")
+
     def init_requirements(self, *args, **kwargs):
         getattr(super(), "init_requirements")(*args, **kwargs)
         self.init_runtime_stats()
+        self.init_metrics()
 
     def get_middlewares(self, *args, **kwargs):
         mw = getattr(super(), "get_middlewares")(*args, **kwargs)
@@ -82,8 +104,12 @@ class ServerStatsMixin(BaseServerMixin):
 
     def get_urlpatterns(self):
         ep = getattr(settings, "RUNTIME_STATS_ENDPOINT", "/runtime/")
+        prometheus_ep = getattr(settings, "PROMETHEUS_METRICS_ENDPOINT", "/metrics")
         patterns = getattr(super(), "get_urlpatterns")()
-        patterns += (("GET", ep, RuntimeStatsView), )
+        patterns += (
+            ("GET", ep, RuntimeStatsView),
+            ("GET", prometheus_ep, PrometheusMetricsView),
+        )
         return patterns
 
     def get_class_props(self):
@@ -105,6 +131,13 @@ class ServerStatsMixin(BaseServerMixin):
             "* * * * * */{}".format(self.RPS_POLLING_SECS), func=self.recalc_rps, start=True)
         self._produce_stats_msg = crontab(
             "* * * * * */{}".format(self.MESSAGE_PRODUCING_SECS), func=self.send_runtime_stats, start=True)
+
+    def init_metrics(self):
+        metrics = get_metrics("http_server")
+        metrics.app_name_prefix = self._metrics_app_name
+        metrics.add_counter(metrics.prefix("requests_total"), "Total requests")
+        self._app_container.metrics = metrics
+        self._app_container.metrics_app_name = self._metrics_app_name
 
     async def recalc_rps(self):
         reqs = self._app_container.get("_request_cnt", 0)

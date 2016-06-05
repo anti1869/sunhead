@@ -1,10 +1,17 @@
 
-from aiohttp.web import View, Response
+from aiohttp.web import View, Response, HTTPCreated
 
 from sunhead.serializers import JSONSerializer
 
 
-class JSONView(View):
+class BasicView(View):
+
+    def basic_response(self, text=None, **kwargs):
+        response = Response(text=text, content_type="text/plain", **kwargs)
+        return response
+
+
+class JSONView(BasicView):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

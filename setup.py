@@ -45,6 +45,8 @@ setup(
         "aiohttp_autoreload",
         "colorlog",
         "simplejson",
+        "prometheus_client",
+        "psutil",
         "PyYAML",
     ],
     entry_points={
