@@ -9,10 +9,9 @@ from importlib import import_module
 import logging
 from typing import Sequence, AnyStr
 
-import aiocron
-
 from sunhead.events.abc import AbstractSubscriber, AbstractTransport, SingleConnectionMeta
 from sunhead.events.exceptions import StreamConnectionError
+from sunhead.periodical import crontab
 from sunhead.events.types import Transferrable
 
 
@@ -33,7 +32,7 @@ class Stream(object):
         self._transport_name = transport
         self._transport_class = self._get_transport_class(self._transport_name)
         self._transport = self._init_transport(self._transport_class, transport_init_kwargs)
-        self._reconnecter = aiocron.crontab(
+        self._reconnecter = crontab(
             "* * * * * */{}".format(self.CONNECTION_CHECK_SECS), func=self._reconnect, start=False)
         self._reconnect_attempts = 0
 

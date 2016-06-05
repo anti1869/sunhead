@@ -21,11 +21,11 @@ runtime stats to the Stream!
 import logging
 from asyncio import ensure_future
 
-import aiocron
 from aiohttp.web import Application
 
 from sunhead.version import get_version
 from sunhead.conf import settings
+from sunhead.periodical import crontab
 from sunhead.rest.views import JSONView
 from sunhead.workers.http.server import BaseServerMixin
 
@@ -101,9 +101,9 @@ class ServerStatsMixin(BaseServerMixin):
         stats.update(self.get_class_props())
 
         self._app_container.stats = stats
-        self._rps_calc = aiocron.crontab(
+        self._rps_calc = crontab(
             "* * * * * */{}".format(self.RPS_POLLING_SECS), func=self.recalc_rps, start=True)
-        self._produce_stats_msg = aiocron.crontab(
+        self._produce_stats_msg = crontab(
             "* * * * * */{}".format(self.MESSAGE_PRODUCING_SECS), func=self.send_runtime_stats, start=True)
 
     async def recalc_rps(self):

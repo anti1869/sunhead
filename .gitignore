@@ -1,3 +1,5 @@
+build_and_push.sh
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
