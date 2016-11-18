@@ -32,6 +32,9 @@ def json_serial(obj):
     elif isinstance(obj, timedelta):
         serial = str(obj)
 
+    elif isinstance(obj, set):
+        serial = list(x for x in obj)
+
     elif isinstance(obj, uuid.UUID):
         serial = str(obj)
 
