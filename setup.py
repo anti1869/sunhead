@@ -41,7 +41,7 @@ setup(
     install_requires=[
         "aioamqp",
         "aiocron",
-        "aiohttp",
+        "aiohttp >= 1.0.5, < 2.0",
         "aiohttp_autoreload",
         "colorlog",
         "simplejson",

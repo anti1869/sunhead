@@ -47,7 +47,7 @@ class Server(AbstractHttpServerWorker):
 
     def create_app(self) -> web.Application:
         mw = self.get_middlewares()
-        app = web.Application(middlewares=mw)
+        app = web.Application(middlewares=mw, debug=settings.DEBUG)
 
         if settings.USE_DEBUG_TOOLBAR:
             try:
@@ -102,9 +102,7 @@ class Server(AbstractHttpServerWorker):
         return sock
 
     def make_web_handler(self):
-        handler = self._app.make_handler(
-            debug=settings.DEBUG
-        )
+        handler = self._app.make_handler()
         return handler
 
     def get_server_init_kwargs(self):
