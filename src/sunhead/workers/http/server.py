@@ -79,7 +79,7 @@ class Server(AbstractHttpServerWorker):
             settings.DEBUG, settings.USE_DEBUG_TOOLBAR)
 
     def add_routers(self):
-        tuple(map(lambda x: self._app.router.add_route(*x), self.get_urlpatterns()))
+        tuple(map(lambda x: self._app.router.add_route(*x[:3]), self.get_urlpatterns()))
 
     def get_urlpatterns(self):
         return []
