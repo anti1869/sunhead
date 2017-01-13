@@ -47,6 +47,7 @@ setup(
         "simplejson",
         "prometheus_client",
         "psutil",
+        "python-dateutil",
         "PyYAML",
     ],
     entry_points={
