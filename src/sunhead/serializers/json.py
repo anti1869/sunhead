@@ -16,34 +16,7 @@ from sunhead.events.abc import AbstractSerializer
 from sunhead.events.exceptions import SerializationError
 from sunhead.events.types import Transferrable, Serialized
 
-
 logger = logging.getLogger(__name__)
-
-
-def json_serial(obj):
-    """JSON serializer for objects not serializable by default json code"""
-
-    if isinstance(obj, datetime):
-        serial = obj.isoformat()
-
-    elif issubclass(obj.__class__, enum.Enum):
-        serial = obj.value
-
-    elif isinstance(obj, timedelta):
-        serial = str(obj)
-
-    elif isinstance(obj, set):
-        serial = list(x for x in obj)
-
-    elif isinstance(obj, uuid.UUID):
-        serial = str(obj)
-
-    # FIXME: if you want to add one more custom serializer, think twice about `singledispatch`
-
-    else:
-        raise TypeError("Type not serializable %s in %s" % (type(obj), obj))
-
-    return serial
 
 
 class JSONSerializer(AbstractSerializer):
@@ -56,6 +29,32 @@ class JSONSerializer(AbstractSerializer):
         self._graceful = graceful
         self._serialized_default = self._DEF_SERIALIZED_DEFAULT
         self._deserialized_default = self._DEF_DESERIALIZED_DEFAULT
+
+    @classmethod
+    def json_serial(cls, obj):
+        """JSON serializer for objects not serializable by default json code"""
+
+        if isinstance(obj, datetime):
+            serial = obj.isoformat()
+
+        elif issubclass(obj.__class__, enum.Enum):
+            serial = obj.value
+
+        elif isinstance(obj, timedelta):
+            serial = str(obj)
+
+        elif isinstance(obj, set):
+            serial = list(x for x in obj)
+
+        elif isinstance(obj, uuid.UUID):
+            serial = str(obj)
+
+        # FIXME: if you want to add one more custom serializer, think twice about `singledispatch`
+
+        else:
+            raise TypeError("Type not serializable %s in %s" % (type(obj), obj))
+
+        return serial
 
     @property
     def graceful(self):
@@ -71,7 +70,7 @@ class JSONSerializer(AbstractSerializer):
 
     def serialize(self, data: Transferrable) -> Serialized:
         try:
-            serialized = json.dumps(data, default=json_serial)
+            serialized = json.dumps(data, default=self.json_serial)
         except Exception:
             logger.error("Message serialization error", exc_info=True)
             if not self.graceful:
