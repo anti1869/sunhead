@@ -13,6 +13,8 @@ class BasicView(View):
 
 class JSONView(BasicView):
 
+    SERIALIZE_KWARGS = {}
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._serializer = JSONSerializer()
@@ -21,7 +23,7 @@ class JSONView(BasicView):
         if context_data is None:
             context_data = {}
 
-        json_data = self._serializer.serialize(context_data)
+        json_data = self._serializer.serialize(context_data, **self.SERIALIZE_KWARGS)
         response = Response(text=json_data, content_type="application/json")
 
         return response

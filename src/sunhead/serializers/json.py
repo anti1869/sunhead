@@ -68,9 +68,10 @@ class JSONSerializer(AbstractSerializer):
         self._serialized_default = serialized
         self._deserialized_default = unserialized
 
-    def serialize(self, data: Transferrable) -> Serialized:
+    def serialize(self, data: Transferrable, **kwargs) -> Serialized:
+        kwargs.setdefault("default", self.json_serial)
         try:
-            serialized = json.dumps(data, default=self.json_serial)
+            serialized = json.dumps(data, **kwargs)
         except Exception:
             logger.error("Message serialization error", exc_info=True)
             if not self.graceful:
