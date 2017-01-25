@@ -87,7 +87,11 @@ class Stream(object):
 
     async def publish(self, data: Transferrable, topics: Sequence[AnyStr]) -> None:
         for topic in topics:
-            asyncio.ensure_future(self._transport.publish(data, topic))
+            # asyncio.ensure_future(self._transport.publish(data, topic))
+            # Here's the deal. If multiple ``publish`` occurs immediately in a cycle,
+            # ensure_future will only happen after all this cycle completes, or there
+            # will be possibility window. So maybe better to use await here?
+            await self._transport.publish(data, topic)
 
     async def subscribe(self, subscriber: AbstractSubscriber, topics: Sequence[AnyStr]) -> None:
         raise NotImplementedError
