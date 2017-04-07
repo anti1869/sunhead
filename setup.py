@@ -6,7 +6,7 @@ if sys.version_info < (3, 5):
     raise Exception('This package requires Python 3.5 or higher.')
 
 
-VERSION = "5.0.1"
+VERSION = "5.0.2"
 PACKAGE_NAME = "sunhead"
 SOURCE_DIR_NAME = "src"
 
@@ -41,7 +41,7 @@ setup(
     install_requires=[
         "aioamqp",
         "aiocron",
-        "aiohttp >= 1.0.5, < 2.0",
+        "aiohttp >=2.0, < 3.0",
         "aiohttp_autoreload",
         "colorlog",
         "simplejson",

@@ -134,7 +134,7 @@ class Server(AbstractHttpServerWorker):
         loop.run_until_complete(handler.finish_connections(1.0))
         srv.close()
         loop.run_until_complete(srv.wait_closed())
-        loop.run_until_complete(self._app.finish())
+        loop.run_until_complete(self._app.cleanup())
 
     @property
     def wsgi_app(self):
